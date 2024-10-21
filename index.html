@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-Weather - Real-time Weather Updates</title>
+    <meta name="description" content="Get real-time weather updates for your city. Enter the city name and explore the current weather conditions and hourly forecasts.">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="weather-container">
+        <h1>🌤️ Weather App</h1>
+        <div class="input-section">
+            <input type="text" id="city" placeholder="Enter city name" aria-label="City name input">
+            <button onclick="getWeather()">🔍 Search</button>
+        </div>
+
+        <div id="weather-info">
+            <img id="weather-icon" alt="Current weather icon" />
+            <div id="temp-div"></div>
+            <div id="details"></div>
+        </div>
+
+        <div id="hourly-forecast"></div>
+        <p>Refresh the page before entering a new location name.</p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
