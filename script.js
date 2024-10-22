@@ -1,5 +1,6 @@
+
 function getWeather() {
-    const apiKey = 'ca263374c2f5c62bc3d9fde7eff3ac4d'; // Replace with your own OpenWeatherMap API key
+    const apiKey = 'ca263374c2f5c62bc3d9fde7eff3ac4d';
     const city = document.getElementById('city').value;
 
     if (!city) {
@@ -7,10 +8,9 @@ function getWeather() {
         return;
     }
 
-    const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+    const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
 
-    // Fetch current weather
     fetch(currentWeatherUrl)
         .then(response => response.json())
         .then(data => {
@@ -21,7 +21,6 @@ function getWeather() {
             alert('Error fetching current weather data. Please try again.');
         });
 
-    // Fetch 5-day forecast
     fetch(forecastUrl)
         .then(response => response.json())
         .then(data => {
@@ -37,44 +36,49 @@ function displayWeather(data) {
     const tempDivInfo = document.getElementById('temp-div');
     const weatherInfoDiv = document.getElementById('weather-info');
     const weatherIcon = document.getElementById('weather-icon');
+    const hourlyForecastDiv = document.getElementById('hourly-forecast');
 
     // Clear previous content
-    tempDivInfo.innerHTML = '';
     weatherInfoDiv.innerHTML = '';
-    weatherIcon.style.display = 'none';
+    hourlyForecastDiv.innerHTML = '';
+    tempDivInfo.innerHTML = '';
 
     if (data.cod === '404') {
         weatherInfoDiv.innerHTML = `<p>${data.message}</p>`;
     } else {
         const cityName = data.name;
-        const temperature = Math.round(data.main.temp);
+        const temperature = Math.round(data.main.temp - 273.15); // Convert to Celsius
         const description = data.weather[0].description;
         const iconCode = data.weather[0].icon;
         const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
 
-        const temperatureHTML = `<p>${temperature}°C</p>`;
-        const weatherHtml = `<p>${cityName}</p><p>${description}</p>`;
+        const temperatureHTML = `
+            <p>${temperature}°C</p>
+        `;
+
+        const weatherHtml = `
+            <p>${cityName}</p>
+            <p>${description}</p>
+        `;
 
         tempDivInfo.innerHTML = temperatureHTML;
         weatherInfoDiv.innerHTML = weatherHtml;
         weatherIcon.src = iconUrl;
         weatherIcon.alt = description;
-        weatherIcon.style.display = 'block'; // Show the icon
 
-        changeBackground(data); // Change background based on weather condition
+        showImage();
     }
 }
 
 function displayHourlyForecast(hourlyData) {
     const hourlyForecastDiv = document.getElementById('hourly-forecast');
-    hourlyForecastDiv.innerHTML = ''; // Clear previous hourly forecast
 
-    const next24Hours = hourlyData.slice(0, 8); // Display next 24 hours (3-hour intervals)
+    const next24Hours = hourlyData.slice(0, 8); // Display the next 24 hours (3-hour intervals)
 
     next24Hours.forEach(item => {
         const dateTime = new Date(item.dt * 1000); // Convert timestamp to milliseconds
         const hour = dateTime.getHours();
-        const temperature = Math.round(item.main.temp);
+        const temperature = Math.round(item.main.temp - 273.15); // Convert to Celsius
         const iconCode = item.weather[0].icon;
         const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
 
@@ -90,23 +94,7 @@ function displayHourlyForecast(hourlyData) {
     });
 }
 
-function changeBackground(weatherData) {
-    const body = document.body;
-    const weatherCondition = weatherData.weather[0].main.toLowerCase();
-    const isDaytime = weatherData.dt > weatherData.sys.sunrise && weatherData.dt < weatherData.sys.sunset;
-
-    let backgroundImage = '';
-
-    // Change background based on weather condition and time of day
-    if (weatherCondition.includes('rain')) {
-        backgroundImage = isDaytime ? 'url("./pexels-pixabay-459451.jpg")' : 'url("./rainy_night.jpg")';
-    } else if (weatherCondition.includes('clear')) {
-        backgroundImage = isDaytime ? 'url("./blue-sky-cloud-clearing-day-600nw-763628821.jpg")' : 'url("./360_F_811711400_rQi5V5IHBt3dPcU0rDKXGE7wjwiWriZm.jpg")';
-    } else if (weatherCondition.includes('clouds')) {
-        backgroundImage = isDaytime ? 'url("./istockphoto-912014918-612x612.jpg")' : 'url("./pexels-seatizen-co-170969-557782.jpg")';
-    } else {
-        backgroundImage = isDaytime ? 'url("https://images.unsplash.com/photo-1508717334315-37b159f24d04?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGRheWxpZ2h0fGVufDB8fDB8fHww")' : 'url("https://images.pexels.com/photos/355887/pexels-photo-355887.jpeg")';
-    }
-
-    body.style.backgroundImage = backgroundImage;
+function showImage() {
+    const weatherIcon = document.getElementById('weather-icon');
+    weatherIcon.style.display = 'block'; // Make the image visible once it's loaded
 }
